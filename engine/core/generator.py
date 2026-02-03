@@ -1,10 +1,9 @@
-"""Gerador de jogos a partir do universo.
+"""Gerador de jogos a partir do universo."""
 
-Nesta versão inicial, a lógica é apenas um stub. A implementação futura
-poderá levar em conta restrições e perfis de geração.
-"""
+from __future__ import annotations
 
 from dataclasses import dataclass
+import random
 from typing import List
 
 from engine.core.universe import Universe
@@ -15,10 +14,22 @@ class GameGenerator:
     """Gerador de jogos baseado em um universo de elementos."""
 
     universe: Universe
+    game_size: int = 6
 
-    def generate(self, quantity: int) -> List[List[int]]:
-        """Gera jogos de forma simples.
+    def generate(self, quantity: int, rng: random.Random | None = None) -> List[List[int]]:
+        """Gera jogos a partir do universo.
 
-        Este método deve ser substituído por lógica real de amostragem.
+        Cada jogo é uma combinação única de elementos (sem repetição),
+        com ordenação determinística para facilitar comparação.
         """
-        return [self.universe.elements[:6] for _ in range(quantity)]
+        if quantity <= 0:
+            return []
+        if self.game_size > len(self.universe.elements):
+            raise ValueError("game_size maior do que o universo disponível")
+
+        rng = rng or random.Random()
+        games: list[list[int]] = []
+        for _ in range(quantity):
+            game = rng.sample(self.universe.elements, self.game_size)
+            games.append(sorted(game))
+        return games
