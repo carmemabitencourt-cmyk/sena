@@ -26,16 +26,27 @@ class Engine:
     Não faz previsões: apenas gera cenários com métricas comparativas.
     """
 
-    def __init__(self, constraints: Constraints | None = None) -> None:
+    def __init__(
+        self,
+        constraints: Constraints | None = None,
+        *,
+        seed: int | None = None,
+        game_size: int = 6,
+    ) -> None:
         self.constraints = constraints or Constraints()
+        self.seed = seed
         self.universe = Universe.default()
-        self.generator = GameGenerator(self.universe)
+        self.generator = GameGenerator(self.universe, game_size=game_size)
         self.simulator = MonteCarloSimulator(self.generator)
 
     def generate(self, number_of_games: int, simulation_size: int) -> EngineResult:
         """Executa a geração de jogos e métricas."""
         self.constraints.validate(number_of_games, simulation_size)
-        games, metrics = self.simulator.run(simulation_size, number_of_games)
+        games, metrics = self.simulator.run(
+            simulation_size,
+            number_of_games,
+            seed=self.seed,
+        )
         score_result = calculate_score(
             metrics.stability_score,
             metrics.coverage_score,

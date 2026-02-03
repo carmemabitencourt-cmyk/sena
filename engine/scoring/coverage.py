@@ -1,8 +1,14 @@
-"""Cálculo de cobertura.
+"""Cálculo de cobertura."""
 
-Stub que será substituído por lógica real.
-"""
+from __future__ import annotations
 
-def coverage_metric(_: list[list[int]]) -> float:
-    """Retorna um valor fixo enquanto a lógica real não existe."""
-    return 0.0
+
+def coverage_metric(games: list[list[int]], universe_size: int) -> float:
+    """Calcula cobertura relativa do universo."""
+    if universe_size <= 0:
+        return 0.0
+    if not games:
+        return 0.0
+
+    unique_elements = {element for game in games for element in game}
+    return len(unique_elements) / universe_size
